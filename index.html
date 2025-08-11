@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Time Tracking System</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #E7F2E4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 1000px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .status {
+            font-size: 18px;
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .clock-in {
+            background-color: #e6f7e6;
+            color: #2e7d32;
+        }
+        
+        .clock-out {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        
+        .button {
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px 5px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s;
+            width: 180px;
+        }
+        
+        .clock-in-btn {
+            background-color: #4CAF50;
+        }
+        
+        .clock-in-btn:hover {
+            background-color: #3e8e41;
+        }
+        
+        .clock-out-btn {
+            background-color: #f44336;
+        }
+        
+        .clock-out-btn:hover {
+            background-color: #d32f2f;
+        }
+        
+        .action-btn {
+            background-color: #607d8b;
+            width: auto;
+            padding: 10px 20px;
+            margin: 5px;
+        }
+        
+        .action-btn:hover {
+            background-color: #455a64;
+        }
+        
+        .staff-btn {
+            background-color: #9c27b0;
+        }
+        
+        .staff-btn:hover {
+            background-color: #7b1fa2;
+        }
+        
+        .share-btn {
+            background-color: #2196F3;
+        }
+        
+        .share-btn:hover {
+            background-color: #0b7dda;
+        }
+        
+        .button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        .time-display {
+            font-size: 24px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        
+        .history {
+            margin-top: 30px;
+            text-align: left;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        
+        .history h3 {
+            margin-bottom: 10px;
+        }
+        
+        .history-item {
+            padding: 8px 0;
+            border-bottom: 1px dashed #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .history-item-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .history-item-delete {
+            background: none;
+            border: none;
+            color: #f44336;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 2px 5px;
+        }
+        
+        .summary {
+            font-weight: bold;
+            margin: 20px 0;
+            color: #333;
+            text-align: left;
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            border-bottom: 3px solid #2196F3;
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+        
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .modal-confirm {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .modal-cancel {
+            background-color: #607d8b;
+            color: white;
+        }
+        
+        .share-options {
+            margin-top: 20px;
+            text-align: left;
+        }
+        
+        .share-option {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .share-option:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .copy-textarea {
+            width: 100%;
+            height: 100px;
+            margin-top: 10px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: none;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        /* Staff management styles */
+        .staff-management {
+            margin-top: 20px;
+            text-align: left;
+        }
+        
+        .staff-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .staff-card {
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            padding: 15px;
+            position: relative;
+        }
+        
+        .staff-name {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .staff-status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .staff-clock-in {
+            background-color: #e6f7e6;
+            color: #2e7d32;
+        }
+        
+        .staff-clock-out {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        
+        .staff-time {
+            font-size: 16px;
+            margin: 5px 0;
+        }
+        
+        .staff-actions {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        
+        .staff-delete {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: none;
+            border: none;
+            color: #f44336;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        
+        /* Team summary styles */
+        .team-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .team-member-summary {
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .team-member-name {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .na-value {
+            color: #999;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Staff Time Tracking System</h1>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="dashboard">Dashboard</div>
+            <div class="tab" data-tab="staff">Staff Management</div>
+            <div class="tab" data-tab="history">History</div>
+            <div class="tab" data-tab="stats">Statistics</div>
+            <div class="tab" data-tab="team">Team Summary</div>
+        </div>
+        
+        <div id="dashboard-tab" class="tab-content active">
+            <div id="current-staff-status"></div>
+            
+            <div class="time-display" id="current-time">--:--:--</div>
+            
+            <div class="staff-management">
+                <h3>Current Staff Status</h3>
+                <div id="current-staff-list" class="staff-list"></div>
+            </div>
+            
+            <div class="summary">
+                <div>Today: <span id="today-total">--:--:--</span></div>
+                <div>Week: <span id="week-total">--:--:--</span></div>
+                <div>Month: <span id="month-total">--:--:--</span></div>
+            </div>
+        </div>
+        
+        <div id="staff-tab" class="tab-content">
+            <div class="action-buttons">
+                <button id="addStaffBtn" class="button staff-btn">Add New Staff Member</button>
+            </div>
+            
+            <div class="staff-management">
+                <h3>Staff Members</h3>
+                <div id="staff-list" class="staff-list"></div>
+            </div>
+        </div>
+        
+        <div id="history-tab" class="tab-content">
+            <div class="action-buttons">
+                <div class="form-group">
+                    <label for="staffFilter">Filter by Staff:</label>
+                    <select id="staffFilter">
+                        <option value="all">All Staff</option>
+                    </select>
+                </div>
+                <button id="deleteAllBtn" class="button action-btn">Delete All Records</button>
+                <button id="shareBtn" class="button action-btn share-btn">Export Data</button>
+            </div>
+            
+            <div id="history-log"></div>
+        </div>
+        
+        <div id="stats-tab" class="tab-content">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="today-stat">--:--:--</div>
+                    <div class="stat-label">Today</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="week-stat">--:--:--</div>
+                    <div class="stat-label">This Week</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="month-stat">--:--:--</div>
+                    <div class="stat-label">This Month</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="total-stat">--:--:--</div>
+                    <div class="stat-label">All Time</div>
+                </div>
+            </div>
+            
+            <div class="history">
+                <h3>Recent Activity</h3>
+                <div id="recent-activity"></div>
+            </div>
+        </div>
+        
+        <div id="team-tab" class="tab-content">
+            <div class="action-buttons">
+                <div class="form-group">
+                    <label for="teamDateFilter">Time Period:</label>
+                    <select id="teamDateFilter">
+                        <option value="today">Today</option>
+                        <option value="week">This Week</option>
+                        <option value="month">This Month</option>
+                        <option value="all">All Time</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="team-summary" id="team-summary"></div>
+        </div>
+    </div>
+
+    <!-- Add Staff Modal -->
+    <div id="addStaffModal" class="modal">
+        <div class="modal-content">
+            <h3>Add New Staff Member</h3>
+            <div class="form-group">
+                <label for="staffName">Staff Name:</label>
+                <input type="text" id="staffName" placeholder="Enter staff member's name">
+            </div>
+            <div class="modal-buttons">
+                <button id="saveStaffBtn" class="button">Save</button>
+                <button id="cancelStaffBtn" class="button modal-cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <h3>Confirm Deletion</h3>
+            <p>Are you sure you want to delete ALL time records?</p>
+            <p>This action cannot be undone.</p>
+            <div class="modal-buttons">
+                <button id="confirmDeleteBtn" class="button modal-confirm">Delete All</button>
+                <button id="cancelDeleteBtn" class="button modal-cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div id="shareModal" class="modal">
+        <div class="modal-content">
+            <h3>Export Time Records</h3>
+            <div class="share-options">
+                <div class="share-option" id="copyOption">
+                    <span>📋 Copy to Clipboard</span>
+                </div>
+                <div class="share-option" id="downloadOption">
+                    <span>💾 Download as Text File</span>
+                </div>
+                <div class="share-option" id="downloadCSVOption">
+                    <span>📊 Download as CSV (Excel)</span>
+                </div>
+            </div>
+            <textarea id="shareTextarea" class="copy-textarea" readonly></textarea>
+            <div class="modal-buttons">
+                <button id="closeShareBtn" class="button modal-cancel">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const currentTimeDisplay = document.getElementById('current-time');
+        const todayTotalDisplay = document.getElementById('today-total');
+        const weekTotalDisplay = document.getElementById('week-total');
+        const monthTotalDisplay = document.getElementById('month-total');
+        const todayStatDisplay = document.getElementById('today-stat');
+        const weekStatDisplay = document.getElementById('week-stat');
+        const monthStatDisplay = document.getElementById('month-stat');
+        const totalStatDisplay = document.getElementById('total-stat');
+        const deleteAllBtn = document.getElementById('deleteAllBtn');
+        const shareBtn = document.getElementById('shareBtn');
+        const confirmModal = document.getElementById('confirmModal');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+        const shareModal = document.getElementById('shareModal');
+        const copyOption = document.getElementById('copyOption');
+        const downloadOption = document.getElementById('downloadOption');
+        const downloadCSVOption = document.getElementById('downloadCSVOption');
+        const shareTextarea = document.getElementById('shareTextarea');
+        const closeShareBtn = document.getElementById('closeShareBtn');
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const currentStaffList = document.getElementById('current-staff-list');
+        const staffList = document.getElementById('staff-list');
+        const addStaffBtn = document.getElementById('addStaffBtn');
+        const addStaffModal = document.getElementById('addStaffModal');
+        const saveStaffBtn = document.getElementById('saveStaffBtn');
+        const cancelStaffBtn = document.getElementById('cancelStaffBtn');
+        const staffNameInput = document.getElementById('staffName');
+        const staffFilter = document.getElementById('staffFilter');
+        const teamDateFilter = document.getElementById('teamDateFilter');
+        const teamSummary = document.getElementById('team-summary');
+        const currentStaffStatus = document.getElementById('current-staff-status');
+        const historyLog = document.getElementById('history-log');
+        const recentActivity = document.getElementById('recent-activity');
+        
+        // State variables
+        let allTimeRecords = [];
+        let staffMembers = [];
+        let activeClockIns = {};
+        
+        // Format time as HH:MM:SS
+        function formatTime(date) {
+            try {
+                if (!(date instanceof Date) || isNaN(date)) {
+                    return '--:--:--';
+                }
+                const hours = date.getHours().toString().padStart(2, '0');
+                const minutes = date.getMinutes().toString().padStart(2, '0');
+                const seconds = date.getSeconds().toString().padStart(2, '0');
+                return `${hours}:${minutes}:${seconds}`;
+            } catch (e) {
+                console.error('Error formatting time:', e);
+                return '--:--:--';
+            }
+        }
+        
+        // Format date as YYYY-MM-DD
+        function formatDate(date) {
+            try {
+                if (!(date instanceof Date) || isNaN(date)) {
+                    return '----/--/--';
+                }
+                const year = date.getFullYear();
+                const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                const day = date.getDate().toString().padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            } catch (e) {
+                console.error('Error formatting date:', e);
+                return '----/--/--';
+            }
+        }
+        
+        // Format date with month name (e.g., Jan 15, 2023)
+        function formatDateWithMonth(date) {
+            try {
+                if (!(date instanceof Date) || isNaN(date)) {
+                    return '--- --, ----';
+                }
+                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+            } catch (e) {
+                console.error('Error formatting date with month:', e);
+                return '--- --, ----';
+            }
+        }
+        
+        // Format seconds as HH:MM:SS
+        function formatSeconds(seconds) {
+            try {
+                if (isNaN(seconds)) return '--:--:--';
+                const hrs = Math.floor(seconds / 3600).toString().padStart(2, '0');
+                const mins = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+                const secs = Math.floor(seconds % 60).toString().padStart(2, '0');
+                return `${hrs}:${mins}:${secs}`;
+            } catch (e) {
+                console.error('Error formatting seconds:', e);
+                return '--:--:--';
+            }
+        }
+        
+        // Calculate time totals
+        function calculateTimeTotals(filterStaffId = null) {
+            const now = new Date();
+            const today = formatDate(now);
+            const thisWeek = getWeekNumber(now);
+            const thisMonth = now.getFullYear() + '-' + (now.getMonth() + 1).toString().padStart(2, '0');
+            
+            let todayTotal = 0;
+            let weekTotal = 0;
+            let monthTotal = 0;
+            let allTimeTotal = 0;
+            
+            allTimeRecords.forEach(record => {
+                if (record.type === 'out' && record.duration) {
+                    // Skip if filtering by staff and this record doesn't match
+                    if (filterStaffId && record.staffId !== filterStaffId) return;
+                    
+                    allTimeTotal += record.duration;
+                    
+                    const recordDate = formatDate(new Date(record.time));
+                    const recordWeek = getWeekNumber(new Date(record.time));
+                    const recordMonth = new Date(record.time).getFullYear() + '-' + (new Date(record.time).getMonth() + 1).toString().padStart(2, '0');
+                    
+                    if (recordDate === today) todayTotal += record.duration;
+                    if (recordWeek === thisWeek) weekTotal += record.duration;
+                    if (recordMonth === thisMonth) monthTotal += record.duration;
+                }
+            });
+            
+            // Add current shifts if clocked in
+            for (const staffId in activeClockIns) {
+                // Skip if filtering by staff and this record doesn't match
+                if (filterStaffId && staffId !== filterStaffId) continue;
+                
+                const clockInTime = activeClockIns[staffId];
+                const currentDuration = Math.floor((now - new Date(clockInTime)) / 1000);
+                
+                const clockInDate = formatDate(new Date(clockInTime));
+                const clockInWeek = getWeekNumber(new Date(clockInTime));
+                const clockInMonth = new Date(clockInTime).getFullYear() + '-' + (new Date(clockInTime).getMonth() + 1).toString().padStart(2, '0');
+                
+                if (clockInDate === today) todayTotal += currentDuration;
+                if (clockInWeek === thisWeek) weekTotal += currentDuration;
+                if (clockInMonth === thisMonth) monthTotal += currentDuration;
+                allTimeTotal += currentDuration;
+            }
+            
+            return {
+                today: todayTotal,
+                week: weekTotal,
+                month: monthTotal,
+                allTime: allTimeTotal
+            };
+        }
+        
+        // Get ISO week number
+        function getWeekNumber(date) {
+            try {
+                if (!(date instanceof Date) || isNaN(date)) return '----W--';
+                const d = new Date(date);
+                d.setHours(0, 0, 0, 0);
+                d.setDate(d.getDate() + 3 - (d.getDay() + 6) % 7);
+                const week1 = new Date(d.getFullYear(), 0, 4);
+                return d.getFullYear() + '-W' + Math.ceil(((d - week1) / 86400000 + 1) / 7).toString().padStart(2, '0');
+            } catch (e) {
+                console.error('Error calculating week number:', e);
+                return '----W--';
+            }
+        }
+        
+        // Update all time total displays
+        function updateTimeTotals() {
+            const totals = calculateTimeTotals();
+            todayTotalDisplay.textContent = formatSeconds(totals.today);
+            weekTotalDisplay.textContent = formatSeconds(totals.week);
+            monthTotalDisplay.textContent = formatSeconds(totals.month);
+            todayStatDisplay.textContent = formatSeconds(totals.today);
+            weekStatDisplay.textContent = formatSeconds(totals.week);
+            monthStatDisplay.textContent = formatSeconds(totals.month);
+            totalStatDisplay.textContent = formatSeconds(totals.allTime);
+        }
+        
+        // Update active clock durations and current time
+        function updateClock() {
+            const now = new Date();
+            currentTimeDisplay.textContent = formatTime(now);
+            updateActiveClockDurations();
+        }
+        
+        // Update active clock durations
+        function updateActiveClockDurations() {
+            const now = new Date();
+            const staffCards = document.querySelectorAll('.staff-card');
+            
+            staffCards.forEach(card => {
+                const staffId = card.getAttribute('data-staff-id');
+                if (activeClockIns[staffId]) {
+                    const clockInTime = new Date(activeClockIns[staffId]);
+                    const diffInSeconds = Math.floor((now - clockInTime) / 1000);
+                    const durationDisplay = card.querySelector('.staff-time');
+                    if (durationDisplay) {
+                        durationDisplay.textContent = `Current shift: ${formatSeconds(diffInSeconds)}`;
+                    }
+                }
+            });
+            
+            // Update team status
+            updateTeamStatus();
+        }
+        
+        // Clock In function for a staff member
+        function clockIn(staffId) {
+            if (activeClockIns[staffId]) return;
+            
+            const clockInTime = new Date();
+            activeClockIns[staffId] = clockInTime.getTime();
+            
+            // Add to activity log
+            const activity = {
+                type: 'in',
+                time: clockInTime.getTime(),
+                staffId: staffId,
+                id: Date.now()
+            };
+            
+            // Add to all records
+            allTimeRecords.push(activity);
+            updateActivityLogs();
+            saveToStorage();
+            
+            // Update UI
+            renderStaffCards();
+            updateTeamStatus();
+        }
+        
+        // Clock Out function for a staff member
+        function clockOut(staffId) {
+            if (!activeClockIns[staffId]) return;
+            
+            const clockOutTime = new Date();
+            const clockInTime = new Date(activeClockIns[staffId]);
+            const shiftDuration = Math.floor((clockOutTime - clockInTime) / 1000);
+            
+            delete activeClockIns[staffId];
+            
+            // Add to activity log
+            const activity = {
+                type: 'out',
+                time: clockOutTime.getTime(),
+                duration: shiftDuration,
+                staffId: staffId,
+                id: Date.now()
+            };
+            
+            // Add to all records
+            allTimeRecords.push(activity);
+            updateActivityLogs();
+            saveToStorage();
+            
+            // Update UI
+            renderStaffCards();
+            updateTeamStatus();
+        }
+        
+        // Delete all records
+        function deleteAllRecords() {
+            if (confirm('Are you sure you want to delete ALL time records? This cannot be undone.')) {
+                allTimeRecords = [];
+                activeClockIns = {};
+                updateActivityLogs();
+                saveToStorage();
+                closeModal();
+            }
+        }
+        
+        // Update all activity logs
+        function updateActivityLogs() {
+            updateHistoryLog();
+            updateRecentActivityLog();
+            updateTimeTotals();
+            updateTeamSummary();
+        }
+        
+        // Update history log
+        function updateHistoryLog() {
+            historyLog.innerHTML = '';
+            
+            if (allTimeRecords.length === 0) {
+                historyLog.innerHTML = '<div class="history-item">No records found</div>';
+                return;
+            }
+            
+            // Filter records by selected staff
+            const selectedStaffId = staffFilter.value;
+            const filteredRecords = selectedStaffId === 'all' 
+                ? allTimeRecords 
+                : allTimeRecords.filter(record => record.staffId === selectedStaffId);
+            
+            if (filteredRecords.length === 0) {
+                historyLog.innerHTML = '<div class="history-item">No records found for selected staff</div>';
+                return;
+            }
+            
+            // Group records by date
+            const recordsByDate = {};
+            filteredRecords.forEach(record => {
+                const date = formatDate(new Date(record.time));
+                if (!recordsByDate[date]) {
+                    recordsByDate[date] = [];
+                }
+                recordsByDate[date].push(record);
+            });
+            
+            // Sort dates in descending order
+            const sortedDates = Object.keys(recordsByDate).sort((a, b) => new Date(b) - new Date(a));
+            
+            // Display records by date
+            sortedDates.forEach(date => {
+                const dateHeader = document.createElement('h4');
+                dateHeader.textContent = formatDateWithMonth(new Date(date));
+                historyLog.appendChild(dateHeader);
+                
+                const dateTotal = recordsByDate[date]
+                    .filter(record => record.type === 'out' && record.duration)
+                    .reduce((sum, record) => sum + record.duration, 0);
+                
+                const dateTotalDisplay = document.createElement('div');
+                dateTotalDisplay.className = 'summary';
+                dateTotalDisplay.textContent = `Total: ${formatSeconds(dateTotal)}`;
+                historyLog.appendChild(dateTotalDisplay);
+                
+                recordsByDate[date].forEach(record => {
+                    const div = document.createElement('div');
+                    div.className = 'history-item';
+                    
+                    const recordTime = new Date(record.time);
+                    const staff = staffMembers.find(s => s.id === record.staffId);
+                    const staffName = staff ? staff.name : 'Unknown';
+                    
+                    if (record.type === 'in') {
+                        div.innerHTML = `
+                            <span>🔵 ${staffName} - Clocked in at ${formatTime(recordTime)}</span>
+                            <div class="history-item-actions">
+                                <button class="history-item-delete" data-id="${record.id}">Delete</button>
+                            </div>
+                        `;
+                    } else {
+                        div.innerHTML = `
+                            <span>🔴 ${staffName} - Clocked out at ${formatTime(recordTime)} (${formatSeconds(record.duration)})</span>
+                            <div class="history-item-actions">
+                                <button class="history-item-delete" data-id="${record.id}">Delete</button>
+                            </div>
+                        `;
+                    }
+                    
+                    historyLog.appendChild(div);
+                });
+            });
+            
+            // Add event listeners to delete buttons
+            document.querySelectorAll('.history-item-delete').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const id = parseInt(e.target.getAttribute('data-id'));
+                    deleteRecord(id);
+                });
+            });
+        }
+        
+        // Update recent activity log
+        function updateRecentActivityLog() {
+            recentActivity.innerHTML = '';
+            
+            if (allTimeRecords.length === 0) {
+                recentActivity.innerHTML = '<div class="history-item">No recent activity</div>';
+                return;
+            }
+            
+            // Get last 5 records (sorted newest first)
+            const recentRecords = [...allTimeRecords]
+                .sort((a, b) => b.time - a.time)
+                .slice(0, 5);
+            
+            recentRecords.forEach(record => {
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                
+                const recordTime = new Date(record.time);
+                const dateStr = formatDateWithMonth(recordTime);
+                const staff = staffMembers.find(s => s.id === record.staffId);
+                const staffName = staff ? staff.name : 'Unknown';
+                
+                if (record.type === 'in') {
+                    div.textContent = `🔵 ${dateStr} - ${staffName} clocked in at ${formatTime(recordTime)}`;
+                } else {
+                    div.textContent = `🔴 ${dateStr} - ${staffName} clocked out at ${formatTime(recordTime)} (${formatSeconds(record.duration)})`;
+                }
+                
+                recentActivity.appendChild(div);
+            });
+        }
+        
+        // Delete a single record
+        function deleteRecord(id) {
+            if (confirm('Are you sure you want to delete this record?')) {
+                // Find the index of the record to delete
+                const index = allTimeRecords.findIndex(record => record.id === id);
+                if (index !== -1) {
+                    // If it's an "out" record, we might need to delete its "in" record
+                    if (allTimeRecords[index].type === 'out') {
+                        // Find the corresponding "in" record (immediately before)
+                        if (index > 0 && allTimeRecords[index - 1].type === 'in' && allTimeRecords[index - 1].staffId === allTimeRecords[index].staffId) {
+                            allTimeRecords.splice(index - 1, 2);
+                        } else {
+                            allTimeRecords.splice(index, 1);
+                        }
+                    } 
+                    // If it's an "in" record, we might need to delete its "out" record
+                    else if (allTimeRecords[index].type === 'in') {
+                        // Find the corresponding "out" record (immediately after)
+                        if (index < allTimeRecords.length - 1 && allTimeRecords[index + 1].type === 'out' && allTimeRecords[index + 1].staffId === allTimeRecords[index].staffId) {
+                            allTimeRecords.splice(index, 2);
+                        } else {
+                            allTimeRecords.splice(index, 1);
+                        }
+                    }
+                    
+                    updateActivityLogs();
+                    saveToStorage();
+                }
+            }
+        }
+        
+        // Generate shareable text
+        function generateShareText() {
+            let text = `Staff Time Tracking Report\n`;
+            text += `Generated: ${formatDateWithMonth(new Date())}\n\n`;
+            
+            // Summary
+            const totals = calculateTimeTotals();
+            text += `SUMMARY:\n`;
+            text += `Today: ${formatSeconds(totals.today)}\n`;
+            text += `This Week: ${formatSeconds(totals.week)}\n`;
+            text += `This Month: ${formatSeconds(totals.month)}\n`;
+            text += `All Time: ${formatSeconds(totals.allTime)}\n\n`;
+            
+            // Staff summary
+            text += `STAFF SUMMARY:\n`;
+            staffMembers.forEach(staff => {
+                const staffTotals = calculateTimeTotals(staff.id);
+                text += `${staff.name}: ${formatSeconds(staffTotals.allTime)}\n`;
+            });
+            text += `\n`;
+            
+            // Detailed records
+            text += `DETAILED RECORDS:\n`;
+            
+            // Group records by date
+            const recordsByDate = {};
+            allTimeRecords.forEach(record => {
+                const date = formatDate(new Date(record.time));
+                if (!recordsByDate[date]) {
+                    recordsByDate[date] = [];
+                }
+                recordsByDate[date].push(record);
+            });
+            
+            // Sort dates in descending order
+            const sortedDates = Object.keys(recordsByDate).sort((a, b) => new Date(b) - new Date(a));
+            
+            // Add records by date
+            sortedDates.forEach(date => {
+                const dateTotal = recordsByDate[date]
+                    .filter(record => record.type === 'out' && record.duration)
+                    .reduce((sum, record) => sum + record.duration, 0);
+                
+                text += `\n${formatDateWithMonth(new Date(date))} (Total: ${formatSeconds(dateTotal)})\n`;
+                
+                recordsByDate[date].forEach(record => {
+                    const recordTime = new Date(record.time);
+                    const staff = staffMembers.find(s => s.id === record.staffId);
+                    const staffName = staff ? staff.name : 'Unknown';
+                    
+                    if (record.type === 'in') {
+                        text += `  🔵 ${staffName} - Clocked in at ${formatTime(recordTime)}\n`;
+                    } else {
+                        text += `  🔴 ${staffName} - Clocked out at ${formatTime(recordTime)} (${formatSeconds(record.duration)})\n`;
+                    }
+                });
+            });
+            
+            // Add current clock-ins if active
+            if (Object.keys(activeClockIns).length > 0) {
+                text += `\nCURRENT SESSIONS (ongoing):\n`;
+                for (const staffId in activeClockIns) {
+                    const staff = staffMembers.find(s => s.id === staffId);
+                    const staffName = staff ? staff.name : 'Unknown';
+                    const now = new Date();
+                    const currentDuration = Math.floor((now - new Date(activeClockIns[staffId])) / 1000);
+                    text += `  🔵 ${staffName} - Clocked in at ${formatTime(new Date(activeClockIns[staffId]))} (${formatSeconds(currentDuration)} so far)\n`;
+                }
+            }
+            
+            return text;
+        }
+        
+        // Generate CSV data
+        function generateCSVData() {
+            let csv = 'Date,Time,Staff,Type,Duration (seconds),Duration (HH:MM:SS)\n';
+            
+            allTimeRecords.forEach(record => {
+                const recordDate = new Date(record.time);
+                const dateStr = formatDate(recordDate);
+                const timeStr = formatTime(recordDate);
+                const staff = staffMembers.find(s => s.id === record.staffId);
+                const staffName = staff ? staff.name : 'Unknown';
+                const type = record.type === 'in' ? 'Clock In' : 'Clock Out';
+                const durationSec = record.duration || '';
+                const durationFormatted = record.duration ? formatSeconds(record.duration) : '';
+                
+                csv += `${dateStr},${timeStr},${staffName},${type},${durationSec},${durationFormatted}\n`;
+            });
+            
+            // Add current clock-ins if active
+            for (const staffId in activeClockIns) {
+                const staff = staffMembers.find(s => s.id === staffId);
+                const staffName = staff ? staff.name : 'Unknown';
+                const now = new Date();
+                const currentDuration = Math.floor((now - new Date(activeClockIns[staffId])) / 1000);
+                const dateStr = formatDate(new Date(activeClockIns[staffId]));
+                const timeStr = formatTime(new Date(activeClockIns[staffId]));
+                
+                csv += `${dateStr},${timeStr},${staffName},Clock In (ongoing),${currentDuration},${formatSeconds(currentDuration)}\n`;
+            }
+            
+            return csv;
+        }
+        
+        // Share functions
+        function openShareModal() {
+            shareTextarea.value = generateShareText();
+            shareModal.style.display = 'block';
+        }
+        
+        function closeShareModal() {
+            shareModal.style.display = 'none';
+        }
+        
+        function copyToClipboard() {
+            shareTextarea.select();
+            document.execCommand('copy');
+            alert('Time records copied to clipboard!');
+        }
+        
+        function downloadAsFile() {
+            const text = generateShareText();
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `staff-time-tracking-${formatDate(new Date())}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        function downloadAsCSV() {
+            const csv = generateCSVData();
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `staff-time-tracking-${formatDate(new Date())}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // Tab switching
+        function switchTab(tabName) {
+            tabs.forEach(tab => {
+                if (tab.dataset.tab === tabName) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+            
+            tabContents.forEach(content => {
+                if (content.id === `${tabName}-tab`) {
+                    content.classList.add('active');
+                } else {
+                    content.classList.remove('active');
+                }
+            });
+            
+            // Special handling for certain tabs
+            if (tabName === 'history') {
+                updateHistoryLog();
+            } else if (tabName === 'team') {
+                updateTeamSummary();
+            }
+        }
+        
+        // Staff management functions
+        function addStaffMember(name) {
+            if (!name.trim()) return;
+            
+            const newStaff = {
+                id: Date.now().toString(),
+                name: name.trim(),
+                createdAt: new Date().getTime()
+            };
+            
+            staffMembers.push(newStaff);
+            saveToStorage();
+            renderStaffCards();
+            updateStaffFilter();
+            
+            // Close modal and clear input
+            addStaffModal.style.display = 'none';
+            staffNameInput.value = '';
+        }
+        
+        function deleteStaffMember(id) {
+            if (confirm('Are you sure you want to delete this staff member? This will also delete all their time records.')) {
+                // Delete all records for this staff member
+                allTimeRecords = allTimeRecords.filter(record => record.staffId !== id);
+                
+                // Remove from active clock-ins if present
+                if (activeClockIns[id]) {
+                    delete activeClockIns[id];
+                }
+                
+                // Remove from staff list
+                staffMembers = staffMembers.filter(staff => staff.id !== id);
+                
+                saveToStorage();
+                renderStaffCards();
+                updateStaffFilter();
+                updateActivityLogs();
+            }
+        }
+        
+        function renderStaffCards() {
+            // Clear current list
+            staffList.innerHTML = '';
+            currentStaffList.innerHTML = '';
+            
+            if (staffMembers.length === 0) {
+                staffList.innerHTML = '<div class="staff-card">No staff members added yet</div>';
+                currentStaffList.innerHTML = '<div class="staff-card">No staff members added yet</div>';
+                return;
+            }
+            
+            // Sort staff by name
+            const sortedStaff = [...staffMembers].sort((a, b) => a.name.localeCompare(b.name));
+            
+            // Create cards for each staff member
+            sortedStaff.forEach(staff => {
+                const isClockedIn = !!activeClockIns[staff.id];
+                const clockInTime = activeClockIns[staff.id];
+                
+                // Staff management card (in staff tab)
+                const staffCard = document.createElement('div');
+                staffCard.className = 'staff-card';
+                staffCard.setAttribute('data-staff-id', staff.id);
+                
+                staffCard.innerHTML = `
+                    <button class="staff-delete" data-staff-id="${staff.id}">✕</button>
+                    <div class="staff-name">${staff.name}</div>
+                    <div class="staff-status ${isClockedIn ? 'staff-clock-in' : 'staff-clock-out'}">
+                        ${isClockedIn ? 'Clocked In' : 'Clocked Out'}
+                    </div>
+                    ${isClockedIn ? `<div class="staff-time">Current shift: ${formatSeconds(Math.floor((new Date() - new Date(clockInTime)) / 1000))}</div>` : ''}
+                    <div class="staff-actions">
+                        <button class="button ${isClockedIn ? 'clock-out-btn' : 'clock-in-btn'}" data-staff-id="${staff.id}">
+                            ${isClockedIn ? 'Clock Out' : 'Clock In'}
+                        </button>
+                    </div>
+                `;
+                
+                staffList.appendChild(staffCard);
+                
+                // Current status card (in dashboard tab) - only if clocked in
+                if (isClockedIn) {
+                    const currentStatusCard = document.createElement('div');
+                    currentStatusCard.className = 'staff-card';
+                    currentStatusCard.setAttribute('data-staff-id', staff.id);
+                    
+                    currentStatusCard.innerHTML = `
+                        <div class="staff-name">${staff.name}</div>
+                        <div class="staff-status staff-clock-in">Clocked In</div>
+                        <div class="staff-time">Current shift: ${formatSeconds(Math.floor((new Date() - new Date(clockInTime)) / 1000))}</div>
+                        <div class="staff-actions">
+                            <button class="button clock-out-btn" data-staff-id="${staff.id}">Clock Out</button>
+                        </div>
+                    `;
+                    
+                    currentStaffList.appendChild(currentStatusCard);
+                }
+            });
+            
+            // Add event listeners to staff cards
+            document.querySelectorAll('.clock-in-btn, .clock-out-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const staffId = e.target.getAttribute('data-staff-id');
+                    if (e.target.classList.contains('clock-in-btn')) {
+                        clockIn(staffId);
+                    } else {
+                        clockOut(staffId);
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.staff-delete').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const staffId = e.target.getAttribute('data-staff-id');
+                    deleteStaffMember(staffId);
+                });
+            });
+        }
+        
+        function updateStaffFilter() {
+            // Clear existing options except "All Staff"
+            while (staffFilter.options.length > 1) {
+                staffFilter.remove(1);
+            }
+            
+            // Add staff members to filter
+            staffMembers.forEach(staff => {
+                const option = document.createElement('option');
+                option.value = staff.id;
+                option.textContent = staff.name;
+                staffFilter.appendChild(option);
+            });
+        }
+        
+        function updateTeamStatus() {
+            const clockedInCount = Object.keys(activeClockIns).length;
+            const totalStaff = staffMembers.length;
+            
+            if (totalStaff === 0) {
+                currentStaffStatus.textContent = 'No staff members added yet';
+                currentStaffStatus.className = 'status';
+                return;
+            }
+            
+            if (clockedInCount === 0) {
+                currentStaffStatus.textContent = 'No staff currently clocked in';
+                currentStaffStatus.className = 'status clock-out';
+            } else if (clockedInCount === totalStaff) {
+                currentStaffStatus.textContent = `All ${totalStaff} staff members clocked in`;
+                currentStaffStatus.className = 'status clock-in';
+            } else {
+                currentStaffStatus.textContent = `${clockedInCount} of ${totalStaff} staff members clocked in`;
+                currentStaffStatus.className = 'status';
+            }
+        }
+        
+        function updateTeamSummary() {
+            teamSummary.innerHTML = '';
+            
+            if (staffMembers.length === 0) {
+                teamSummary.innerHTML = '<div class="team-member-summary">No staff members added yet</div>';
+                return;
+            }
+            
+            const filterValue = teamDateFilter.value;
+            const now = new Date();
+            
+            staffMembers.forEach(staff => {
+                let totalSeconds = 0;
+                
+                // Calculate based on filter
+                if (filterValue === 'today') {
+                    const today = formatDate(now);
+                    totalSeconds = allTimeRecords
+                        .filter(record => record.staffId === staff.id && 
+                               record.type === 'out' && 
+                               formatDate(new Date(record.time)) === today)
+                        .reduce((sum, record) => sum + record.duration, 0);
+                    
+                    // Add current shift if clocked in today
+                    if (activeClockIns[staff.id] && formatDate(new Date(activeClockIns[staff.id])) === today) {
+                        totalSeconds += Math.floor((now - new Date(activeClockIns[staff.id])) / 1000);
+                    }
+                } else if (filterValue === 'week') {
+                    const thisWeek = getWeekNumber(now);
+                    totalSeconds = allTimeRecords
+                        .filter(record => record.staffId === staff.id && 
+                               record.type === 'out' && 
+                               getWeekNumber(new Date(record.time)) === thisWeek)
+                        .reduce((sum, record) => sum + record.duration, 0);
+                    
+                    // Add current shift if clocked in this week
+                    if (activeClockIns[staff.id] && getWeekNumber(new Date(activeClockIns[staff.id])) === thisWeek) {
+                        totalSeconds += Math.floor((now - new Date(activeClockIns[staff.id])) / 1000);
+                    }
+                } else if (filterValue === 'month') {
+                    const thisMonth = now.getFullYear() + '-' + (now.getMonth() + 1).toString().padStart(2, '0');
+                    totalSeconds = allTimeRecords
+                        .filter(record => record.staffId === staff.id && 
+                               record.type === 'out' && 
+                               (new Date(record.time).getFullYear() + '-' + (new Date(record.time).getMonth() + 1).toString().padStart(2, '0')) === thisMonth)
+                        .reduce((sum, record) => sum + record.duration, 0);
+                    
+                    // Add current shift if clocked in this month
+                    if (activeClockIns[staff.id]) {
+                        const clockInMonth = new Date(activeClockIns[staff.id]).getFullYear() + '-' + (new Date(activeClockIns[staff.id]).getMonth() + 1).toString().padStart(2, '0');
+                        if (clockInMonth === thisMonth) {
+                            totalSeconds += Math.floor((now - new Date(activeClockIns[staff.id])) / 1000);
+                        }
+                    }
+                } else { // all time
+                    totalSeconds = allTimeRecords
+                        .filter(record => record.staffId === staff.id && record.type === 'out')
+                        .reduce((sum, record) => sum + record.duration, 0);
+                    
+                    // Add current shift if clocked in
+                    if (activeClockIns[staff.id]) {
+                        totalSeconds += Math.floor((now - new Date(activeClockIns[staff.id])) / 1000);
+                    }
+                }
+                
+                const summaryCard = document.createElement('div');
+                summaryCard.className = 'team-member-summary';
+                summaryCard.innerHTML = `
+                    <div class="team-member-name">${staff.name}</div>
+                    <div class="stat-value">${totalSeconds > 0 ? formatSeconds(totalSeconds) : '<span class="na-value">No time</span>'}</div>
+                    <div>${activeClockIns[staff.id] ? '🔵 Currently clocked in' : '🔴 Currently clocked out'}</div>
+                `;
+                
+                teamSummary.appendChild(summaryCard);
+            });
+        }
+        
+        // Modal functions
+        function openModal(modal) {
+            modal.style.display = 'block';
+        }
+        
+        function closeModal() {
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.style.display = 'none';
+            });
+        }
+        
+        // Load data from localStorage
+        function loadFromStorage() {
+            const savedData = localStorage.getItem('staffTimeTrackingData');
+            
+            if (savedData) {
+                try {
+                    const data = JSON.parse(savedData);
+                    allTimeRecords = data.records || [];
+                    staffMembers = data.staff || [];
+                    activeClockIns = data.activeClockIns || {};
+                    
+                    // Check for any ongoing clock-ins from previous session
+                    const now = new Date();
+                    for (const staffId in activeClockIns) {
+                        const clockInTime = new Date(activeClockIns[staffId]);
+                        const elapsed = Math.floor((now - clockInTime) / 1000);
+                        console.log(`Resumed clock-in session for staff ${staffId} that was ${formatSeconds(elapsed)} long`);
+                    }
+                    
+                    renderStaffCards();
+                    updateStaffFilter();
+                    updateActivityLogs();
+                    updateTeamStatus();
+                } catch (e) {
+                    console.error('Error parsing saved data:', e);
+                }
+            }
+        }
+        
+        // Save data to localStorage
+        function saveToStorage() {
+            const data = {
+                records: allTimeRecords,
+                staff: staffMembers,
+                activeClockIns: activeClockIns
+            };
+            localStorage.setItem('staffTimeTrackingData', JSON.stringify(data));
+        }
+        
+        // Event listeners
+        addStaffBtn.addEventListener('click', () => openModal(addStaffModal));
+        saveStaffBtn.addEventListener('click', () => addStaffMember(staffNameInput.value));
+        cancelStaffBtn.addEventListener('click', () => closeModal());
+        deleteAllBtn.addEventListener('click', () => openModal(confirmModal));
+        shareBtn.addEventListener('click', openShareModal);
+        confirmDeleteBtn.addEventListener('click', deleteAllRecords);
+        cancelDeleteBtn.addEventListener('click', () => closeModal());
+        copyOption.addEventListener('click', copyToClipboard);
+        downloadOption.addEventListener('click', downloadAsFile);
+        downloadCSVOption.addEventListener('click', downloadAsCSV);
+        closeShareBtn.addEventListener('click', closeShareModal);
+        staffFilter.addEventListener('change', updateHistoryLog);
+        teamDateFilter.addEventListener('change', updateTeamSummary);
+        
+        // Tab click events
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+        });
+        
+        // Close modals when clicking outside of them
+        window.addEventListener('click', (event) => {
+            if (event.target.classList.contains('modal')) {
+                closeModal();
+            }
+        });
+        
+        // Initialize
+        setInterval(updateClock, 1000);
+        updateClock(); // Call immediately to set initial time
+        loadFromStorage(); // Load data including any active clock-ins
+
+        // Force an immediate UI update after load
+        setTimeout(() => {
+            updateActiveClockDurations();
+            updateTimeTotals();
+        }, 100);
+    </script>
+</body>
+</html>
